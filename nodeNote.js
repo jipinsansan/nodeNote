@@ -401,3 +401,45 @@ server.use('/', function (req, res){
 });
 
 server.listen(8080);
+
+----------------------------------------------------jade模板引擎-------------------------------------------->
+-----main.js------------->
+
+const jade=require('jade');
+const fs=require('fs');
+
+var str =jade.renderFile('./views/index.jade',{pretty:true,name:"变量"});//变量直接在后面添加，在jade模板中使用
+
+fs.writeFile('./build/index.html',str,function(err){
+	if(err){
+		console.log('编译失败');
+	}else{
+		console.log('编译成功');
+	}
+});
+
+-----index.jade------------->
+doctype
+html
+  head
+  meta(charset="utf-8")  
+  style.
+    div{width:100px;height:100px;background:#CCC;text-align:center;line-height:100px;float:left;margin:10px auto}
+    div.last{clear:left}
+  body
+    -var a=0;
+    while a<12
+      if a%4==0 &&a!=0
+        div.last=a++
+      else
+        div=a++
+
+-----jdae语法-------------->
+1 根据缩进，规定层级
+2 属性放在()里面，多个属性逗号分隔
+3 内容空个格，直接往后堆 也可以#{变量} 还可以直接="内容"或者变量
+4 .后面代表所有子级原样输出   也可以用include 直接引入文件( include a.js)
+5 |后面是单行原样输出
+6 -代表后面跟的是语句
+7 !表示将标签原样输出
+

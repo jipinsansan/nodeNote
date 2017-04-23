@@ -1,4 +1,4 @@
-nodeJS——服务器
+﻿nodeJS——服务器
 
 http——协议
 
@@ -15,7 +15,7 @@ Timers	定时器
 ZLIB	压缩
 
 
-------------------------------http模块-------------------------------------->
+------------------------------http模块---------------------------------------->
 const http=require('http');
 
 var server=http.createServer(function (req, res){

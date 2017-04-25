@@ -443,3 +443,112 @@ html
 6 -代表后面跟的是语句
 7 !表示将标签原样输出
 
+----------------------------------------------------Ejs模板引擎-------------------------------------------->
+const ejs=require('ejs');
+var str =jade.renderFile('./views/index.ejs',{name:"变量"},function  (err,data) {
+  // body...
+});
+<%= name%>
+<% include "文件地址" %>
+
+----------------------------------------------------multer中间件-------------------------------------------->
+小例子：
+-----HTML部分----------------------->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <form action="http://localhost:8080/" method="post" enctype="multipart/form-data">
+      文件：<input type="file" name="f1" /><br>
+      <input type="submit" value="上传">
+    </form>
+  </body>
+</html>
+
+-----js部分----------------------->
+const express=require('express');
+const bodyParser=require('body-parser');
+const multer=require('multer');
+const fs=require('fs');
+const pathLib=require('path');//node自带模块  用来解析路径
+/*var str='c:\\wamp\\www\\a.html';
+var obj=path.parse(str);
+//base      文件名部分
+//ext       扩展名
+//dir       路径
+//name      文件名部分
+console.log(obj);*/
+
+var objMulter=multer({dest: './www/upload/'});//multer中间件  用来上传图片等文件数据
+var server=express();
+//错误 bodyParser只能用来解析post普通的json类型的数据
+//server.use(bodyParser.urlencoded({extended: false}));
+server.use(objMulter.any());
+
+server.post('/', function (req, res){
+  //新文件名
+  //'./www/upload/dfb33662df86c75cf4ea8197f9d419f9' + '.png'
+  var newName=req.files[0].path+pathLib.parse(req.files[0].originalname).ext;
+
+  fs.rename(req.files[0].path, newName, function (err){ //fs.rename("旧名字"，"新名字",function回调)
+    if(err)
+      res.send('上传失败');
+    else
+      res.send('成功');
+  });
+
+  //1.获取原始文件扩展名
+  //2.重命名临时文件
+});
+
+server.listen(8080);
+
+--------------------------------------------模板引擎适配consolidate------------------------------------------------>
+模板引擎：适配
+1.consolidate
+
+consolidate=require('consolidate');
+三步配置走：
+server.set('view engine', 'html'); //设置模板引擎输出的文件类型
+server.set('views', '模板文件目录'); //设置模板文件的位置
+server.engine('html', consolidate.ejs);//设置使用的模板引擎
+
+server.get('/', function (req, res){
+  res.render('模板文件', 数据);//res.render相当于res.send 向页面输出数据
+});
+
+---------------------------------------------router路由----------------------------------------------------------------->
+var server=express();
+var router1=express.Router();
+server.use('/user', router1);
+
+var router11=express.Router();
+router1.use('/user_mod', router11);
+router1.use('/user_reg', function (){});
+http://www.xxxx.com/user/user_mod/1.html
+http://www.xxxx.com/user/user_reg
+http://www.xxxx.com/user/user_login
+
+router11.get('./1.html',function  (req,res) {
+  // body...
+})
+
+var router2=express.Router();
+server.use('/news', router2);
+http://www.xxxx.com/news/list.html
+http://www.xxxx.com/news/post
+http://www.xxxx.com/news/content
+router2.get('./list.html',function  (req,res) {
+  // body...
+})
+var router3=express.Router();
+server.use('/item', router3);
+http://www.xxxx.com/item/buy.html
+http://www.xxxx.com/item/mod
+http://www.xxxx.com/item/del
+router3.get('./buy.html',function  (req,res) {
+  // body...
+})
